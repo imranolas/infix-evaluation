@@ -5,18 +5,30 @@ const PRECEDENCE = {
   '-': 5
 };
 
-function isOperator(ch) {
-  return '+-*/'.indexOf(ch) >= 0;
+function isOperator(token) {
+  return '+-*/'.indexOf(token) >= 0;
 }
 
-function isNumber(ch) {
-  return typeof ch === 'number';
+function isNumber(token) {
+  return typeof token === 'number';
 }
 
+/**
+ * Take a peek at the value on the top of the stack
+ * @method peekTop
+ * @param  {Array} stack
+ * @return {Any}
+ */
 function peekTop(stack) {
   return stack.slice(-1)[0];
 }
 
+/**
+ * Transforms an array of infix tokens to an array of postfix tokens
+ * @method infixToPostfix
+ * @param  {Array} arr
+ * @return {Array}
+ */
 export function infixToPostfix(arr) {
   let outputStack = [];
   const operatorStack = [];
@@ -44,6 +56,12 @@ export function infixToPostfix(arr) {
   return outputStack.concat(operatorStack.reverse());
 }
 
+/**
+ * Evaluates an array of postfix tokens
+ * @method evaluatePostfix
+ * @param  {Array}  arr
+ * @return {Number}
+ */
 export function evaluatePostfix(arr) {
   let stack = [];
   while (arr.length !== 0) {
@@ -59,6 +77,14 @@ export function evaluatePostfix(arr) {
   return stack.pop();
 }
 
+/**
+ * Applies an operator to a pair of values
+ * @method evaluateExpression
+ * @param  {String}           operator one of /*+-
+ * @param  {Number}           operandB
+ * @param  {Number}           operandA
+ * @return {Number}
+ */
 function evaluateExpression(operator, operandB, operandA) {
   switch (operator) {
     case '+':

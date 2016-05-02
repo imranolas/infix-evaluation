@@ -14,6 +14,13 @@ function isPunctuation(ch) {
     return '()'.indexOf(ch) >= 0;
 }
 
+/**
+ * Takes chars from the input stream given a predicate.
+ * @method takeWhile
+ * @param  {Function}     predicate
+ * @param  {InputStream}  input
+ * @return {String}
+ */
 function takeWhile(predicate, input) {
   let str = '';
   while (!input.eof() && predicate(input.peek())) {
@@ -22,6 +29,16 @@ function takeWhile(predicate, input) {
   return str;
 }
 
+/**
+ * An array of identifiers where each identifier responds to accept and take.
+ *
+ * #accept returns a boolean if a given token matches that identifier.
+ *
+ * #take performs returns the matching token and progresses the input stream to
+ * the next token.
+ *
+ * @type {Array}
+ */
 export const identifiers = [
   {
     accept: isWhitespace,
@@ -54,6 +71,12 @@ export const identifiers = [
   }
 ];
 
+/**
+ * Returns an array of valid tokens.
+ * @method createTokenStream
+ * @param  {inputStream} input
+ * @return {Array}
+ */
 export function createTokenStream(input) {
   const outputStream = [];
   while (!input.eof()) {

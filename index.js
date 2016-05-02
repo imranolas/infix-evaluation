@@ -2,6 +2,7 @@ import express from 'express';
 import {parseAndEvaluate} from './src/index';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.get('/calculus', (req, res) => {
   const query = new Buffer(req.query.query, 'base64').toString('utf8');
@@ -20,6 +21,6 @@ app.get('/calculus', (req, res) => {
   }
 });
 
-app.listen(process.env.PORT, () => {
-  console.log('Example app listening on port 3000!');
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
