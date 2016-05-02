@@ -23,32 +23,30 @@ export function infixToPostix(arr) {
 
   while (arr.length !== 0) {
     const token = arr.shift();
-    if (token === '(') {
-      const newContext = [];
-      let nextToken = arr.shift();
-      while (nextToken !== ')') {
-        newContext.push(nextToken);
-        nextToken = arr.shift();
+    if (token === ')') {
+      while (operatorStack.length && peekTop(operatorStack) !== '(') {
+        outputStack.push(operatorStack.pop());
       }
-      outputStack = outputStack.concat(infixToPostix(newContext));
+      operatorStack.pop();
+    } else if (token === '(') {
+      operatorStack.push(token);
     } else if (isOperator(token)) {
       while (operatorStack.length &&
-        (PRECEDENCE[token] || 0) <= (PRECEDENCE[peekTop(operatorStack)] || 0)) {
-          outputStack.push(operatorStack.pop());
-        }
-        operatorStack.push(token);
-    } else {
+             PRECEDENCE[token] <= PRECEDENCE[peekTop(operatorStack)]) {
+        outputStack.push(operatorStack.pop());
+      }
+      operatorStack.push(token);
+    } else if (isNumber(token)) {
       outputStack.push(token);
     }
   }
 
-  return outputStack.concat(operatorStack);
+  return outputStack.concat(operatorStack.reverse());
 }
 
 export function evaluatePostfix(arr) {
   let stack = [];
   while (arr.length !== 0) {
-    console.log(stack);
     let token = arr.shift();
     if (isNumber(token)) {
       stack.push(token);
