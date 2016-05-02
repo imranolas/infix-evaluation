@@ -17,7 +17,7 @@ function peekTop(stack) {
   return stack.slice(-1)[0];
 }
 
-export function infixToPostix(arr) {
+export function infixToPostfix(arr) {
   let outputStack = [];
   const operatorStack = [];
 

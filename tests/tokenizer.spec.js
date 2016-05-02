@@ -1,6 +1,6 @@
 import tape from 'tape';
 import {createInputStream} from '../src/input';
-import {identifiers, tokenStream} from '../src/tokenizer';
+import {identifiers, createTokenStream} from '../src/tokenizer';
 
 tape('isOp', (t) => {
     const [,, opIdent] = identifiers;
@@ -39,14 +39,7 @@ tape('tokenStream', (t) => {
   ];
 
   cases.forEach(({input, output}) => {
-    const streamGen = tokenStream(createInputStream(input));
-
-    output.reduce((tokenStream, token) => {
-      t.deepEqual(streamGen.next(), {done: false, value: token});
-      return streamGen;
-    }, streamGen);
-
-    t.deepEqual(streamGen.next(), {done: true, value: undefined});
+    t.deepEqual(createTokenStream(createInputStream(input)), output);
   });
 
   t.end();

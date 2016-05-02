@@ -1,7 +1,7 @@
 import tape from 'tape';
-import {infixToPostix, evaluatePostfix} from '../src/evaluator.js';
+import {infixToPostfix, evaluatePostfix} from '../src/evaluator.js';
 
-tape('infixToPostix', (t) => {
+tape('infixToPostfix', (t) => {
     const cases = [
       {input: [1, '+', 2], output: [1, 2, '+']},
       {input: [3, '-', 4], output: [3, 4, '-']},
@@ -16,7 +16,7 @@ tape('infixToPostix', (t) => {
     ];
 
     cases.forEach(({input, output}) => {
-      t.deepEqual(infixToPostix(input), output);
+      t.deepEqual(infixToPostfix(input), output);
     });
 
     t.end();

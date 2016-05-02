@@ -12,9 +12,6 @@ export function createInputStream(str) {
     },
     eof() {
       return this.peek() === '';
-    },
-    croak(msg) {
-      throw new Error(`${msg} (pos: ${col})`);
     }
   };
 }

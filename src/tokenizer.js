@@ -54,13 +54,18 @@ export const identifiers = [
   }
 ];
 
-export function* tokenStream(input) {
+export function createTokenStream(input) {
+  const outputStream = [];
   while (!input.eof()) {
     const [whitespaceIdent] = identifiers;
     whitespaceIdent.take(input); // Discard whitespace tokens
 
     const identifier = identifiers.find(({accept}) => accept(input.peek()));
-    if (!identifier) input.croak();
-    yield identifier.take(input);
+    if (!identifier) throw new SyntaxError(unidentifedMessage(input.peek()));
+    outputStream.push(identifier.take(input));
   }
+
+  return outputStream;
 }
+
+const unidentifedMessage = (val) => `Unidentified token ${val}. Only numeric characters and +-*/() are permitted. Did you make a typo or perhaps you forgot to base64 encode your input.`;
