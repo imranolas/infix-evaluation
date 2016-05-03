@@ -6,11 +6,20 @@ tape('isOp', (t) => {
     const [,, opIdent] = identifiers;
     t.equal(opIdent.take(createInputStream('/')), '/');
     t.equal(opIdent.take(createInputStream('*')), '*');
-    t.equal(opIdent.take(createInputStream('-')), '-');
-    t.equal(opIdent.take(createInputStream('+')), '+');
+    t.equal(opIdent.take(createInputStream('-')), '-u');
+    t.equal(opIdent.take(createInputStream('+')), '+u');
 
-    t.equal(opIdent.take(createInputStream('2 + 3')), '');
-    t.equal(opIdent.take(createInputStream('+/')), '+/');
+    const cases = [
+      {input: ['-', 1], output: '-'},
+      {input: ['+', 1], output: '+'},
+      {input: ['+', '('], output: '+u'}
+    ];
+
+    cases.forEach(({input, output}) => {
+      const inputStream = createInputStream(input[0]);
+      t.equal(opIdent.take(inputStream, input[1]), output);
+    });
+
     t.end();
 });
 
@@ -34,6 +43,12 @@ tape('tokenStream', (t) => {
   const cases = [
     { input: '1 + 2 * (3 - 5)',
       output: [1, '+', 2, '*', '(', 3, '-', 5, ')'] },
+    { input: '1 + -2',
+      output: [1, '+', '-u', 2] },
+    { input: '-1 + 2',
+      output: ['-u', 1, '+', 2] },
+    { input: '( -1 + 2)',
+      output: ['(', '-u', 1, '+', 2, ')'] },
     { input: '2 * (23/(3*3))- 23 * (2*3)',
       output: [2, '*', '(', 23, '/', '(', 3, '*', 3, ')', ')', '-', 23, '*', '(', 2, '*', 3, ')'] }
   ];
@@ -42,5 +57,11 @@ tape('tokenStream', (t) => {
     t.deepEqual(createTokenStream(createInputStream(input)), output);
   });
 
+  t.end();
+});
+
+tape('tokenStream exceptions', (t) => {
+  t.doesNotThrow(() => createTokenStream(createInputStream('1 - - + 3')));
+  t.throws(() => createTokenStream(createInputStream('1 * / 3')), /Too many consecutive operators/);
   t.end();
 });

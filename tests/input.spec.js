@@ -2,7 +2,6 @@ import tape from 'tape';
 import {createInputStream} from '../src/input';
 
 tape('inputStream', (t) => {
-    // t.plan(2);
     const input = '1 + 2';
     const inputStream = createInputStream(input);
 

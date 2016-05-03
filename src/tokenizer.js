@@ -6,6 +6,10 @@ function isOperator(ch) {
   return '+-*/'.indexOf(ch) >= 0;
 }
 
+function isUnary(ch) {
+  return '+-'.indexOf(ch) >= 0;
+}
+
 function isWhitespace(ch) {
   return ' \t\n'.indexOf(ch) >= 0;
 }
@@ -50,9 +54,9 @@ export const identifiers = [
       let hasDot = false;
       const number = takeWhile(ch => {
         if (ch === '.') {
-            if (hasDot) return false;
-            hasDot = true;
-            return true;
+          if (hasDot) return false;
+          hasDot = true;
+          return true;
         }
         return isDigit(ch);
       }, input);
@@ -61,8 +65,12 @@ export const identifiers = [
   },
   {
     accept: isOperator,
-    take(input) {
-      return takeWhile(isOperator, input);
+    take: (input, prevToken) => {
+      if (!isDigit(prevToken) && prevToken !== ')' && isUnary(input.peek())) {
+        return input.next() + 'u'; // Unary
+      }
+      if (isOperator(prevToken)) throw new SyntaxError('Too many consecutive operators.');
+      return input.next();
     }
   },
   {
@@ -85,7 +93,9 @@ export function createTokenStream(input) {
 
     const identifier = identifiers.find(({accept}) => accept(input.peek()));
     if (!identifier) throw new SyntaxError(unidentifedMessage(input.peek()));
-    outputStream.push(identifier.take(input));
+    const prevToken = outputStream.slice(-1)[0];
+    const nextToken = identifier.take(input, prevToken);
+    outputStream.push(nextToken);
   }
 
   return outputStream;

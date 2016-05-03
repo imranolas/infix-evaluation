@@ -13,6 +13,13 @@ function isNumber(token) {
   return typeof token === 'number';
 }
 
+function isUnaryOperator(token) {
+  if (typeof token === 'string') {
+    return token.slice(-1) === 'u';
+  }
+  return false;
+}
+
 /**
  * Take a peek at the value on the top of the stack
  * @method peekTop
@@ -36,7 +43,8 @@ export function infixToPostfix(arr) {
   while (arr.length !== 0) {
     const token = arr.shift();
     if (token === ')') {
-      while (operatorStack.length && peekTop(operatorStack) !== '(') {
+      while (peekTop(operatorStack) !== '(') {
+        if (!operatorStack.length) throw new SyntaxError('missing an opening parenthesis.');
         outputStack.push(operatorStack.pop());
       }
       operatorStack.pop();
@@ -48,9 +56,23 @@ export function infixToPostfix(arr) {
         outputStack.push(operatorStack.pop());
       }
       operatorStack.push(token);
+    } else if (isUnaryOperator(token)) {
+      operatorStack.push(token);
     } else if (isNumber(token)) {
-      outputStack.push(token);
+      let count = 0;
+      while (isUnaryOperator(peekTop(operatorStack))) {
+        const unaryOp = operatorStack.pop();
+        if (unaryOp[0] === '-') count--;
+        if (unaryOp[0] === '+') count++;
+      }
+      const nextToken = count < 0 ? -token : token;
+      outputStack.push(nextToken);
     }
+  }
+
+  while (operatorStack.length) {
+    if (!isOperator(peekTop(operatorStack))) throw new SyntaxError('missing a closing parenthesis.');
+    outputStack.push(operatorStack.pop());
   }
 
   return outputStack.concat(operatorStack.reverse());
