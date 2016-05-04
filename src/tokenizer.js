@@ -95,9 +95,8 @@ export function createTokenStream(input) {
     if (!identifier) throw new SyntaxError(unidentifedMessage(input.peek()));
     const prevToken = outputStream.slice(-1)[0];
     const nextToken = identifier.take(input, prevToken);
-    outputStream.push(nextToken);
+    if (nextToken !== '') outputStream.push(nextToken);
   }
-
   return outputStream;
 }
 
