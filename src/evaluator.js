@@ -59,13 +59,12 @@ export function infixToPostfix(arr) {
     } else if (isUnaryOperator(token)) {
       operatorStack.push(token);
     } else if (isNumber(token)) {
-      let count = 0;
+      let isNegative = false;
       while (isUnaryOperator(peekTop(operatorStack))) {
         const unaryOp = operatorStack.pop();
-        if (unaryOp[0] === '-') count--;
-        if (unaryOp[0] === '+') count++;
+        if (unaryOp[0] === '-') isNegative = !isNegative;
       }
-      const nextToken = count < 0 ? -token : token;
+      const nextToken = isNegative ? -token : token;
       outputStack.push(nextToken);
     }
   }
